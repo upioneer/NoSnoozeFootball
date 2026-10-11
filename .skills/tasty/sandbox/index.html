@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Code Scaffold Specification Schema: https://code-scaffold.com/spec/v1 -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasty - Bespoke Anti-Slop Frontend Styling Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --tasty-hue: 188;
+      --tasty-radius: 12px;
+      --tasty-blur: 16px;
+      --tasty-glow: 0.35;
+      --tasty-primary: hsl(var(--tasty-hue), 85%, 53%);
+      --tasty-primary-glow: hsla(var(--tasty-hue), 85%, 53%, var(--tasty-glow));
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #020617;
+      color: #f8fafc;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .grid-bg {
+      background-image: radial-gradient(var(--tasty-primary-glow) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(var(--tasty-blur));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--tasty-radius);
+      transition: all 0.25s ease;
+    }
+    .glass-card:hover {
+      border-color: var(--tasty-primary);
+      box-shadow: 0 10px 30px -10px var(--tasty-primary-glow);
+    }
+    .tasty-btn {
+      border-radius: calc(var(--tasty-radius) * 0.75);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tasty-btn-primary {
+      background-color: var(--tasty-primary);
+      color: #020617;
+      font-weight: 700;
+    }
+    .tasty-btn-primary:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 20px var(--tasty-primary-glow);
+    }
+    .tasty-btn-primary:active {
+      transform: scale(0.97);
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #020617; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body class="grid-bg flex flex-col h-screen overflow-hidden">
+
+  <!-- Header -->
+  <header class="h-14 glass-card rounded-none border-t-0 border-x-0 border-b border-slate-800 px-6 flex items-center justify-between z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-black text-sm" id="logo-badge">
+        T
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2">
+          Tasty Studio
+          <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/30" id="badge-anti-slop">ANTI-SLOP STYLING ENGINE</span>
+        </h1>
+        <p class="text-xs text-slate-400">Deterministic Frontend Heuristics &bull; Token Playground</p>
+      </div>
+    </div>
+
+    <!-- Active Preset Badges -->
+    <div class="flex items-center gap-2 text-xs">
+      <button onclick="applyPreset('cyber')" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-medium preset-btn" data-preset="cyber">Cyber Slate</button>
+      <button onclick="applyPreset('emerald')" class="px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 font-medium preset-btn" data-preset="emerald">Terminal Green</button>
+      <button onclick="applyPreset('amber')" class="px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 font-medium preset-btn" data-preset="amber">Solar Amber</button>
+      <button onclick="applyPreset('indigo')" class="px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 font-medium preset-btn" data-preset="indigo">Deep Indigo</button>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2">
+      <button onclick="copyTokens()" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+        <span id="copy-btn-text">Copy CSS Tokens</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Studio Workspace Layout -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- Left: Design Token Studio Sidebar -->
+    <div class="w-80 glass-card rounded-none border-y-0 border-l-0 border-r border-slate-800 p-5 flex flex-col gap-5 overflow-y-auto z-10">
+      <div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1" id="token-header">Design Token Engine</h2>
+        <p class="text-xs text-slate-400">Mutate design tokens in real-time with instant DOM reactivity.</p>
+      </div>
+
+      <!-- Token Sliders -->
+      <div class="space-y-4 text-xs font-mono">
+        <!-- Hue Slider -->
+        <div class="space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-300">ACCENT HUE</span>
+            <span class="text-cyan-400 font-bold" id="val-hue">188°</span>
+          </div>
+          <input type="range" min="0" max="360" value="188" oninput="updateToken('hue', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400">
+        </div>
+
+        <!-- Corner Radius -->
+        <div class="space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-300">CORNER RADIUS</span>
+            <span class="text-cyan-400 font-bold" id="val-radius">12px</span>
+          </div>
+          <input type="range" min="0" max="24" value="12" oninput="updateToken('radius', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400">
+        </div>
+
+        <!-- Glass Blur -->
+        <div class="space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-300">GLASS BLUR</span>
+            <span class="text-cyan-400 font-bold" id="val-blur">16px</span>
+          </div>
+          <input type="range" min="0" max="32" value="16" oninput="updateToken('blur', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400">
+        </div>
+
+        <!-- Glow Intensity -->
+        <div class="space-y-1">
+          <div class="flex justify-between">
+            <span class="text-slate-300">PERIMETER GLOW</span>
+            <span class="text-cyan-400 font-bold" id="val-glow">35%</span>
+          </div>
+          <input type="range" min="0" max="100" value="35" oninput="updateToken('glow', this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400">
+        </div>
+      </div>
+
+      <!-- Anti-Slop Rules Checklist -->
+      <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-2.5 text-xs">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tasty Anti-Slop Invariants</span>
+        
+        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+          <input type="checkbox" checked disabled class="rounded bg-slate-950 text-cyan-400 accent-cyan-400">
+          <span>APCA Contrast Certified</span>
+        </label>
+        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+          <input type="checkbox" checked disabled class="rounded bg-slate-950 text-cyan-400 accent-cyan-400">
+          <span>No Unmotivated AI Gradients</span>
+        </label>
+        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+          <input type="checkbox" checked disabled class="rounded bg-slate-950 text-cyan-400 accent-cyan-400">
+          <span>8-State Interactive Discipline</span>
+        </label>
+        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+          <input type="checkbox" checked disabled class="rounded bg-slate-950 text-cyan-400 accent-cyan-400">
+          <span>Zero Fabricated Copy</span>
+        </label>
+      </div>
+
+      <!-- Token Code Inspector -->
+      <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 font-mono text-[11px] text-slate-400 space-y-1 mt-auto">
+        <span class="text-slate-500 block text-[10px] uppercase font-bold">Generated CSS Variables</span>
+        <div id="css-preview" class="text-cyan-300 whitespace-pre">
+:root {
+  --tasty-hue: 188;
+  --tasty-radius: 12px;
+  --tasty-blur: 16px;
+  --tasty-glow: 0.35;
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right: Live Reactive Component Showroom -->
+    <div class="flex-1 p-8 overflow-y-auto space-y-8 bg-slate-950/40">
+
+      <!-- Hero Section Preview -->
+      <div class="glass-card p-8 relative overflow-hidden">
+        <div class="max-w-2xl space-y-4 relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-slate-900/80 border border-slate-800">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--tasty-primary);"></span>
+            <span class="text-slate-300">PRODUCTION SHOWROOM</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+            Stop Shipping Generic AI Slop. Craft Bespoke Frontend DNA.
+          </h2>
+
+          <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Tasty mathematically eliminates generic templates, unmotivated gradients, and sloppy contrast. Experience pure architectural precision with reactive token binding.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <button class="tasty-btn tasty-btn-primary px-5 py-2.5 text-sm font-bold flex items-center gap-2">
+              <span>Explore Scaffolding</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+            <button class="tasty-btn px-5 py-2.5 text-sm bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition">
+              View Architecture
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Grid Cards Showroom -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Bento 1 -->
+        <div class="glass-card p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center border" style="background: var(--tasty-primary-glow); border-color: var(--tasty-primary); color: var(--tasty-primary);">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="font-bold text-white text-base">Mathematical Hierarchy</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Every font size, margin, and padding adheres to strict geometric scales rather than arbitrary pixel guesswork.
+            </p>
+          </div>
+          <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider">&bull; Strict Scale 1.25x</span>
+        </div>
+
+        <!-- Bento 2 -->
+        <div class="glass-card p-6 flex flex-col justify-between gap-4">
+          <div class="space-y-2">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center border" style="background: var(--tasty-primary-glow); border-color: var(--tasty-primary); color: var(--tasty-primary);">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="font-bold text-white text-base">Micro-Interactions</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Components feature spring-calibrated physical transitions, tactile active states, and focus-visible rings.
+            </p>
+          </div>
+          <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider">&bull; 60fps Native GPU</span>
+        </div>
+
+        <!-- Bento 3: Interactive Button States -->
+        <div class="glass-card p-6 flex flex-col justify-between gap-3">
+          <h3 class="font-bold text-white text-base">8-State Button Discipline</h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Default:</span>
+              <button class="tasty-btn px-3 py-1 text-xs border" style="background: var(--tasty-primary); color: #020617; font-weight: 700;">Submit</button>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Hover / Glow:</span>
+              <button class="tasty-btn px-3 py-1 text-xs border" style="background: var(--tasty-primary); color: #020617; font-weight: 700; box-shadow: 0 0 12px var(--tasty-primary);">Hovered</button>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Disabled:</span>
+              <button class="tasty-btn px-3 py-1 text-xs bg-slate-800/60 text-slate-500 border border-slate-800 cursor-not-allowed" disabled>Locked</button>
+            </div>
+          </div>
+          <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider">&bull; Complete State Matrix</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let currentTokens = {
+      hue: 188,
+      radius: 12,
+      blur: 16,
+      glow: 0.35
+    };
+
+    function updateToken(key, value) {
+      if (key === 'hue') {
+        currentTokens.hue = value;
+        document.getElementById('val-hue').textContent = `${value}°`;
+      } else if (key === 'radius') {
+        currentTokens.radius = value;
+        document.getElementById('val-radius').textContent = `${value}px`;
+      } else if (key === 'blur') {
+        currentTokens.blur = value;
+        document.getElementById('val-blur').textContent = `${value}px`;
+      } else if (key === 'glow') {
+        currentTokens.glow = value / 100;
+        document.getElementById('val-glow').textContent = `${value}%`;
+      }
+
+      applyTokens();
+    }
+
+    function applyTokens() {
+      const root = document.documentElement;
+      root.style.setProperty('--tasty-hue', currentTokens.hue);
+      root.style.setProperty('--tasty-radius', `${currentTokens.radius}px`);
+      root.style.setProperty('--tasty-blur', `${currentTokens.blur}px`);
+      root.style.setProperty('--tasty-glow', currentTokens.glow);
+
+      document.getElementById('css-preview').textContent = `:root {
+  --tasty-hue: ${currentTokens.hue};
+  --tasty-radius: ${currentTokens.radius}px;
+  --tasty-blur: ${currentTokens.blur}px;
+  --tasty-glow: ${currentTokens.glow};
+}`;
+    }
+
+    function applyPreset(preset) {
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        if (btn.getAttribute('data-preset') === preset) {
+          btn.className = "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-medium preset-btn";
+        } else {
+          btn.className = "px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 font-medium preset-btn";
+        }
+      });
+
+      if (preset === 'cyber') {
+        currentTokens = { hue: 188, radius: 12, blur: 16, glow: 0.35 };
+      } else if (preset === 'emerald') {
+        currentTokens = { hue: 155, radius: 8, blur: 20, glow: 0.45 };
+      } else if (preset === 'amber') {
+        currentTokens = { hue: 38, radius: 16, blur: 12, glow: 0.40 };
+      } else if (preset === 'indigo') {
+        currentTokens = { hue: 245, radius: 14, blur: 24, glow: 0.50 };
+      }
+
+      document.querySelector('input[oninput*="hue"]').value = currentTokens.hue;
+      document.getElementById('val-hue').textContent = `${currentTokens.hue}°`;
+
+      document.querySelector('input[oninput*="radius"]').value = currentTokens.radius;
+      document.getElementById('val-radius').textContent = `${currentTokens.radius}px`;
+
+      document.querySelector('input[oninput*="blur"]').value = currentTokens.blur;
+      document.getElementById('val-blur').textContent = `${currentTokens.blur}px`;
+
+      document.querySelector('input[oninput*="glow"]').value = currentTokens.glow * 100;
+      document.getElementById('val-glow').textContent = `${Math.round(currentTokens.glow * 100)}%`;
+
+      applyTokens();
+    }
+
+    function copyTokens() {
+      const code = document.getElementById('css-preview').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copy-btn-text');
+        btn.textContent = "Copied to Clipboard!";
+        setTimeout(() => { btn.textContent = "Copy CSS Tokens"; }, 2000);
+      });
+    }
+
+    applyTokens();
+  </script>
+</body>
+</html>

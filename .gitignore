@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+node_modules/
+target/
+
+# Code Scaffold Project Details (Local Context)
+project_details/*.md
+!project_details/readme.md
+
+!project_details/changelog/
+!project_details/playbooks/
+!project_details/proof/
+
+# Playwright transient execution artifacts
+.skills/playwright/.temp-*

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://code-scaffold.com/schemas/v1/skill-manifest.json",
+  "specification": "https://code-scaffold.com/spec/v1",
+  "name": "code_scaffold_open_design_skill",
+  "version": "3",
+  "description": "Create production-grade UI design prototypes using the open-source Open Design system",
+  "entryPoint": "./SKILL.md",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "requiredPermissions": [
+    "fs:read",
+    "fs:write",
+    "net:connect"
+  ],
+  "category": "Frontend & UI Design",
+  "keywords": [
+    "open-design",
+    "design-system",
+    "figma-tokens",
+    "tailwind-tokens",
+    "component-library",
+    "ui-ux"
+  ],
+  "hasSandbox": false,
+  "integrity": "cs:sha256:9c7e8f40b68deecbd8b6135f2375ae152580322f65c0bdf80862d2c13bcf1f6a"
+}
